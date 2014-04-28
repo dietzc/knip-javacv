@@ -16,5 +16,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: knip_javacv.jar,
  lib/javacpp.jar,
  lib/javacv.jar
+Bundle-Activator: org.knime.knip.javacv.JavaCVNodeActivator
 Bundle-ActivationPolicy: lazy
 
