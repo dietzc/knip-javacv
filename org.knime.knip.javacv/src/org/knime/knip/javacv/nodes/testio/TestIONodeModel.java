@@ -50,7 +50,10 @@
 package org.knime.knip.javacv.nodes.testio;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -72,6 +75,16 @@ import org.knime.core.node.NodeSettingsWO;
 import org.knime.knip.base.data.img.ImgPlusCell;
 import org.knime.knip.base.data.img.ImgPlusCellFactory;
 
+import com.googlecode.javacpp.BytePointer;
+import com.googlecode.javacpp.Loader;
+import com.googlecode.javacv.cpp.avcodec;
+import com.googlecode.javacv.cpp.avcodec.AVCodec;
+import com.googlecode.javacv.cpp.avcodec.AVCodecContext;
+import com.googlecode.javacv.cpp.avcodec.AVFrame;
+import com.googlecode.javacv.cpp.avcodec.AVPacket;
+import com.googlecode.javacv.cpp.opencv_core;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
+
 /**
  * @author dietzc, University of Konstanz
  */
@@ -91,19 +104,83 @@ public class TestIONodeModel extends NodeModel {
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
 			final ExecutionContext exec) throws Exception {
 
+		Loader.load(opencv_core.class);
+		Loader.load(AVPacket.class);
+		Loader.load(avcodec.class);
+
 		final ImgPlusCellFactory factory = new ImgPlusCellFactory(exec);
 
 		final BufferedDataContainer container = exec
 				.createDataContainer(createOutSpec());
 
 		// X,Y,Time
-		final Img<FloatType> img = new ArrayImgFactory<FloatType>().create(
-				new long[] { 1000, 1000, 100 }, new FloatType());
+		final Img<FloatType> img;
 
-		// HIER: Befülle Img mit daten aus orginal img die du via JavaCV
+		// HIER: BefÃ¼lle Img mit daten aus orginal img die du via JavaCV
 		// einliest.
 
 		// String path = "C:\myfile\...".
+
+		final String path = "/home/tibuch/workspace_knime/DELTA.MPG";
+		final AVCodec codec;
+		final AVCodecContext c;
+		int frame, len;
+		int[] got_picture = new int[1];
+		final AVFrame picture;
+		IplImage iplImg;
+		ByteBuffer inbufBB = ByteBuffer
+				.allocateDirect(4096 + avcodec.FF_INPUT_BUFFER_PADDING_SIZE);
+
+		BytePointer inbuf = new BytePointer(inbufBB);
+
+		AVPacket avpkt = new AVPacket();
+
+		avcodec.av_init_packet(avpkt);
+
+		codec = avcodec.avcodec_find_decoder(avcodec.AV_CODEC_ID_MPEG1VIDEO);
+		if (codec == null)
+			System.out.println("Codec not found");
+
+		c = avcodec.avcodec_alloc_context3(codec);
+		if ((codec.capabilities() & avcodec.CODEC_CAP_TRUNCATED) != 0)
+			c.flags(c.flags() | avcodec.CODEC_FLAG_TRUNCATED);
+
+		FileChannel fin = new FileInputStream(path).getChannel();
+
+		picture = avcodec.avcodec_alloc_frame();
+		if (picture == null)
+			System.out.println("Could not allocate video frame.");
+
+		frame = 0;
+
+		img = new ArrayImgFactory<FloatType>().create(
+				new long[] { c.width(), c.height(), avpkt.size() },
+				new FloatType());
+
+		while (true) {
+			inbufBB.position(0).limit(4096);
+			avpkt.size(fin.read(inbufBB));
+			if (avpkt.size() <= 0)
+				break;
+
+			avpkt.data(inbuf);
+			while (avpkt.size() > 0) {
+				len = avcodec.avcodec_decode_video2(c, picture, got_picture,
+						avpkt);
+				if (len < 0) {
+					System.err.printf("Error while decoding frame %d\n", frame);
+				}
+				if (got_picture[0] != 0) {
+					System.out.printf("Saving frame %3d\n", frame);
+					String buf = String.format("output", frame);
+					iplImg = IplImage.create(picture.width(), picture.height(),
+							avpkt.size(), 1);
+
+				}
+
+			}
+
+		}
 
 		final ImgPlus<FloatType> wrappedImg = new ImgPlus<FloatType>(img);
 
@@ -111,6 +188,7 @@ public class TestIONodeModel extends NodeModel {
 				.createCell(wrappedImg)));
 
 		container.close();
+
 		return new BufferedDataTable[] { container.getTable() };
 	}
 
