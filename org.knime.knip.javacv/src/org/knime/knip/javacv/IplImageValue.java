@@ -3,6 +3,7 @@ package org.knime.knip.javacv;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataValue;
 import org.knime.core.data.DataValueComparator;
@@ -11,8 +12,6 @@ import org.knime.core.data.renderer.DataValueRendererFamily;
 import org.knime.core.data.renderer.DefaultDataValueRendererFamily;
 import org.knime.knip.base.data.img.ImgPlusValue;
 import org.knime.knip.base.renderer.ThumbnailRenderer;
-
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public interface IplImageValue extends DataValue {
 

@@ -48,8 +48,8 @@
  */
 package org.knime.knip.javacv;
 
-import java.awt.GraphicsEnvironment;
-
+import org.bytedeco.javacpp.Loader;
+import org.bytedeco.javacpp.opencv_core;
 import org.knime.core.node.NodeLogger;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -60,46 +60,28 @@ import org.osgi.framework.BundleContext;
  * @author <a href="mailto:horn_martin@gmx.de">Martin Horn</a>
  * @author <a href="mailto:michael.zinsmaier@googlemail.com">Michael
  *         Zinsmaier</a>
- * @author Clemens Müthing (clemens.muething@uni-konstanz.de)
  */
 public class JavaCVNodeActivator implements BundleActivator {
 
-	private static final NodeLogger LOGGER = NodeLogger.getLogger("JavaCV");
+	private static final NodeLogger LOGGER = NodeLogger
+			.getLogger(JavaCVNodeActivator.class);
 
-	private static boolean OpenCVLoaded = false;
+	private static boolean JavaCVLoaded = false;
 
-	/*
-	 * The system specific files These are in order of their dependencies, SO DO
-	 * NOT TOUCH THEM!
-	 */
-	private static String[] linux = { "avcodec", "avdevice",
-			"avfilter", "avformat", "avutil",
-			"jniARToolKitPlus", "jniavcodec", "jniavdevice",
-			"jniavfilter", "jniavformat", "jniavutil",
-			"jnicvkernels", "jnidc1394", "jnifreenect",
-			"jniopencv_calib3d", "jniopencv_contrib",
-			"jniopencv_core", "jniopencv_features2d",
-			"jniopencv_flann", "jniopencv_highgui",
-			"jniopencv_imgproc", "jniopencv_legacy",
-			"jniopencv_ml", "jniopencv_nonfree",
-			"jniopencv_objdetect", "jniopencv_photo",
-			"jniopencv_stitching", "jniopencv_video",
-			"jniopencv_videostab", "jnipostproc",
-			"jniswresample", "jniswscale",
-			"opencv_calib3d", "opencv_contrib",
-			"opencv_core", "opencv_features2d",
-			"opencv_flann", "opencv_gpu",
-			"opencv_highgui", "opencv_imgproc",
-			"opencv_legacy", "opencv_ml",
-			"opencv_nonfree", "opencv_objdetect",
-			"opencv_photo", "opencv_stitching",
-			"opencv_superres", "opencv_video",
-			"opencv_videostab", "postproc",
-			"swresample", "swscale", "tbb" };
-	// TODO complete string for windows with all dll from org.knime.knip.javacv.bin.windows.x86_64..
-	//private static String[] windows = { };
+	private static String[] WINDOWS = { "msvcp100", "msvcr100", "jnicvkernels",
+			"jniARToolKitPlus", "opencv_core248", "opencv_imgproc248",
+			"jniopencv_core" };
 
-
+	//
+	// "jniopencv_legacy", "jniopencv_ml",
+	// "jniopencv_nonfree", "jniopencv_objdetect", "jniopencv_photo",
+	// "jniopencv_stitching", "jniopencv_video", "jniopencv_videostab",
+	// "jnipostproc", "jniswresample", "jniswscale",
+	//
+	// , "jniavcodec", "jniavdevice", "jniavfilter",
+	// "jniavformat", "jniavutil", "jnifreenect", "jniopencv_calib3d",
+	// "jniopencv_contrib", "jniopencv_features2d", "jniopencv_flann",
+	// "jniopencv_highgui", "jniopencv_imgproc"
 	/**
 	 * This method trys to load all libs that are passed to it.<br>
 	 * 
@@ -123,37 +105,37 @@ public class JavaCVNodeActivator implements BundleActivator {
 
 	@Override
 	public final void start(final BundleContext context) throws Exception {
-		
-		System.loadLibrary("jniopencv_core");
-		System.out.println("breakpoint");
-//		if (!GraphicsEnvironment.isHeadless()) {
-//
-//			LOGGER.debug("Trying to load vtk libs");
-//
-//			final String os = System.getProperty("os.name");
-//
-//			try {
-//
-//				if (os.contains("Windows")) {
-//					loadLibs(windows);
-//				} else if (os.equals("Linux")) {
-//					loadLibs(linux);
-//				} else if (os.equals("Mac OS X")) {
-//					loadLibs(osx);
-//				} else {
-//					LOGGER.error("VTK not loaded, could not determine System: "
-//							+ os);
-//				}
-//
-//				LOGGER.debug("VTK successfully loaded");
-//				VTKLoaded = true;
-//
-//			} catch (final UnsatisfiedLinkError error) {
-//				LOGGER.error("Could not load VTK, the 3D Viewer will not be available!");
-//				LOGGER.error(error.getMessage());
-//			}
-//
-//		}
+
+		LOGGER.debug("Trying to load JavaCV libs");
+
+		// final String os = System.getProperty("os.name");
+
+		try {
+
+			// loadLibs(WINDOWS);
+
+			// if (os.contains("Windows")) {
+			// loadLibs(windows);
+			// } else if (os.equals("Linux")) {
+			// loadLibs(linux);
+			// } else if (os.equals("Mac OS X")) {
+			// loadLibs(osx);
+			// } else {
+			// LOGGER.error("VTK not loaded, could not determine System: "
+			// + os);
+			// }
+
+			Loader.load(opencv_core.class);
+			//
+			// LOGGER.debug("JavaCV successfully loaded");
+			// JavaCVLoaded = true;
+
+		} catch (final UnsatisfiedLinkError e) {
+			LOGGER.error("Could not load JavaCV");
+			LOGGER.error(e.getMessage());
+			e.printStackTrace();
+		}
+
 	}
 
 	@Override
@@ -161,7 +143,7 @@ public class JavaCVNodeActivator implements BundleActivator {
 		// unused
 	}
 
-	public static final boolean VTKLoaded() {
-		return OpenCVLoaded;
+	public static final boolean JavaCVLoaded() {
+		return JavaCVLoaded;
 	}
 }

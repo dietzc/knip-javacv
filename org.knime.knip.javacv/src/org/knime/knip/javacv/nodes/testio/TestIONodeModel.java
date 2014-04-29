@@ -60,6 +60,13 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.real.FloatType;
 
+import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.avcodec;
+import org.bytedeco.javacpp.avcodec.AVCodec;
+import org.bytedeco.javacpp.avcodec.AVCodecContext;
+import org.bytedeco.javacpp.avcodec.AVPacket;
+import org.bytedeco.javacpp.avutil.AVFrame;
+import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.DefaultRow;
@@ -74,16 +81,6 @@ import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
 import org.knime.knip.base.data.img.ImgPlusCell;
 import org.knime.knip.base.data.img.ImgPlusCellFactory;
-
-import com.googlecode.javacpp.BytePointer;
-import com.googlecode.javacpp.Loader;
-import com.googlecode.javacv.cpp.avcodec;
-import com.googlecode.javacv.cpp.avcodec.AVCodec;
-import com.googlecode.javacv.cpp.avcodec.AVCodecContext;
-import com.googlecode.javacv.cpp.avcodec.AVFrame;
-import com.googlecode.javacv.cpp.avcodec.AVPacket;
-import com.googlecode.javacv.cpp.opencv_core;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 /**
  * @author dietzc, University of Konstanz
@@ -103,10 +100,6 @@ public class TestIONodeModel extends NodeModel {
 	@Override
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
 			final ExecutionContext exec) throws Exception {
-
-		Loader.load(opencv_core.class);
-		Loader.load(AVPacket.class);
-		Loader.load(avcodec.class);
 
 		final ImgPlusCellFactory factory = new ImgPlusCellFactory(exec);
 

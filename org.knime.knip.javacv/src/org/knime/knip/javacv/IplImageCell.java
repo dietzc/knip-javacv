@@ -2,6 +2,8 @@ package org.knime.knip.javacv;
 
 import java.io.IOException;
 
+import org.bytedeco.javacpp.PointerPointer;
+import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataCellDataInput;
 import org.knime.core.data.DataCellDataOutput;
@@ -9,9 +11,6 @@ import org.knime.core.data.DataCellSerializer;
 import org.knime.core.data.DataType;
 import org.knime.core.data.DataValue;
 import org.knime.core.data.container.BlobDataCell;
-
-import com.googlecode.javacpp.PointerPointer;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class IplImageCell extends BlobDataCell implements IplImageValue {
 

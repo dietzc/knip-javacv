@@ -1,5 +1,6 @@
 package org.knime.knip.javacv.nodes.bypass;
 
+import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -16,8 +17,6 @@ import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 import org.knime.knip.javacv.IplImageCell;
 import org.knime.knip.javacv.IplImageValue;
 import org.knime.knip.javacv.nodes.io.webcam.SimpleStreamableNodeModel;
-
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class ByPassNodeModel extends SimpleStreamableFunctionNodeModel
 		implements SimpleStreamableNodeModel {

@@ -3,6 +3,8 @@ package org.knime.knip.javacv.nodes.io.webcam;
 import java.io.File;
 import java.io.IOException;
 
+import org.bytedeco.javacpp.opencv_core.IplImage;
+import org.bytedeco.javacv.VideoInputFrameGrabber;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
@@ -27,10 +29,6 @@ import org.knime.core.node.streamable.RowInput;
 import org.knime.core.node.streamable.RowOutput;
 import org.knime.core.node.streamable.StreamableOperator;
 import org.knime.knip.javacv.IplImageCell;
-
-import com.googlecode.javacv.FrameGrabber.Exception;
-import com.googlecode.javacv.VideoInputFrameGrabber;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class WebCamIONodeModel extends NodeModel implements
 		SimpleStreamableNodeModel {
@@ -65,7 +63,7 @@ public class WebCamIONodeModel extends NodeModel implements
 			public void runFinal(final PortInput[] inputs,
 					final PortOutput[] outputs, final ExecutionContext ctx)
 					throws Exception,
-					com.googlecode.javacv.FrameRecorder.Exception {
+					org.bytedeco.javacv.FrameRecorder.Exception {
 
 				try {
 					((RowInput) inputs[0]).poll();
@@ -76,8 +74,6 @@ public class WebCamIONodeModel extends NodeModel implements
 
 					m_producer.start();
 				} catch (Exception e) {
-					// do nothing
-				} catch (InterruptedException e) {
 					// do nothing
 				}
 				RowOutput out = (RowOutput) outputs[0];
@@ -109,11 +105,6 @@ public class WebCamIONodeModel extends NodeModel implements
 				} catch (Exception e) {
 					e.printStackTrace();
 
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (CanceledExecutionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				} finally {
 					((RowInput) inputs[0]).close();
 					out.close();
@@ -131,9 +122,8 @@ public class WebCamIONodeModel extends NodeModel implements
 		final BufferedDataContainer container = exec
 				.createDataContainer(new DataTableSpec(m_spec));
 
-		StreamableOperator op;
 		try {
-			op = createStreamableOperator(new PartitionInfo(0, 1), null);
+			createStreamableOperator(new PartitionInfo(0, 1), null);
 		} catch (InvalidSettingsException e1) {
 			e1.printStackTrace();
 		}
@@ -194,8 +184,8 @@ public class WebCamIONodeModel extends NodeModel implements
 		private VideoInputFrameGrabber m_grabber;
 
 		public ImageProducer()
-				throws com.googlecode.javacv.FrameRecorder.Exception,
-				com.googlecode.javacv.FrameGrabber.Exception {
+				throws org.bytedeco.javacv.FrameRecorder.Exception,
+				org.bytedeco.javacv.FrameGrabber.Exception {
 			m_grabber = null;
 			try {
 				m_grabber = new VideoInputFrameGrabber(1);
@@ -204,22 +194,21 @@ public class WebCamIONodeModel extends NodeModel implements
 			}
 		}
 
-		public void stop() throws com.googlecode.javacv.FrameGrabber.Exception {
+		public void stop() throws org.bytedeco.javacv.FrameGrabber.Exception {
 			m_grabber.stop();
 		}
 
-		public void start()
-				throws com.googlecode.javacv.FrameGrabber.Exception,
+		public void start() throws org.bytedeco.javacv.FrameGrabber.Exception,
 				InterruptedException {
 
 			m_grabber.start();
 			Thread.sleep(1000);
 			m_currentImg = m_grabber.grab();
-			m_grabber.setFrameRate(20.0); 
+			m_grabber.setFrameRate(20.0);
 		}
 
 		public final IplImage get()
-				throws com.googlecode.javacv.FrameGrabber.Exception {
+				throws org.bytedeco.javacv.FrameGrabber.Exception {
 			return m_currentImg = m_grabber.grab();
 		}
 	}

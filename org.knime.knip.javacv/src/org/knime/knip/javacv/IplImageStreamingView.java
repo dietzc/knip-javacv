@@ -1,10 +1,9 @@
 package org.knime.knip.javacv;
 
+import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeView;
 import org.knime.knip.javacv.nodes.io.webcam.SimpleStreamableNodeModel;
-
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class IplImageStreamingView<K extends NodeModel & SimpleStreamableNodeModel>
 		extends NodeView<K> {
