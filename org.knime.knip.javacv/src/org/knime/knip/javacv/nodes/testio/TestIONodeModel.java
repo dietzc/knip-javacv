@@ -49,24 +49,19 @@
  */
 package org.knime.knip.javacv.nodes.testio;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 
+import net.imglib2.RandomAccess;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.meta.ImgPlus;
+import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 
-import org.bytedeco.javacpp.BytePointer;
-import org.bytedeco.javacpp.avcodec;
-import org.bytedeco.javacpp.avcodec.AVCodec;
-import org.bytedeco.javacpp.avcodec.AVCodecContext;
-import org.bytedeco.javacpp.avcodec.AVPacket;
-import org.bytedeco.javacpp.avutil.AVFrame;
 import org.bytedeco.javacpp.opencv_core.IplImage;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.DefaultRow;
@@ -114,71 +109,50 @@ public class TestIONodeModel extends NodeModel {
 
 		// String path = "C:\myfile\...".
 
-		final String path = "/home/tibuch/workspace_knime/DELTA.MPG";
-		final AVCodec codec;
-		final AVCodecContext c;
-		int frame, len;
-		int[] got_picture = new int[1];
-		final AVFrame picture;
-		IplImage iplImg;
-		ByteBuffer inbufBB = ByteBuffer
-				.allocateDirect(4096 + avcodec.FF_INPUT_BUFFER_PADDING_SIZE);
+		final String path = "c:\\1-2-2.m4v";
 
-		BytePointer inbuf = new BytePointer(inbufBB);
+		FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(path);
+		grabber.setFrameNumber(0);
+		grabber.start();
 
-		AVPacket avpkt = new AVPacket();
+		int samplingRate = 40;
+		System.out.println(grabber.getLengthInFrames());
 
-		avcodec.av_init_packet(avpkt);
-
-		codec = avcodec.avcodec_find_decoder(avcodec.AV_CODEC_ID_MPEG1VIDEO);
-		if (codec == null)
-			System.out.println("Codec not found");
-
-		c = avcodec.avcodec_alloc_context3(codec);
-		if ((codec.capabilities() & avcodec.CODEC_CAP_TRUNCATED) != 0)
-			c.flags(c.flags() | avcodec.CODEC_FLAG_TRUNCATED);
-
-		FileChannel fin = new FileInputStream(path).getChannel();
-
-		picture = avcodec.avcodec_alloc_frame();
-		if (picture == null)
-			System.out.println("Could not allocate video frame.");
-
-		frame = 0;
-
+		BufferedImage init = grabber.grab().getBufferedImage();
 		img = new ArrayImgFactory<FloatType>().create(
-				new long[] { c.width(), c.height(), avpkt.size() },
-				new FloatType());
+				new long[] { init.getWidth(), init.getHeight(), 3,
+						grabber.getLengthInFrames() / 40 }, new FloatType());
 
-		while (true) {
-			inbufBB.position(0).limit(4096);
-			avpkt.size(fin.read(inbufBB));
-			if (avpkt.size() <= 0)
-				break;
+		final RandomAccess<FloatType> access = img.randomAccess();
+		for (int i = 0; i < img.dimension(3); i++) {
+			grabber.setFrameNumber(i * 40);
+			BufferedImage bufferedImage = grabber.grab().getBufferedImage();
 
-			avpkt.data(inbuf);
-			while (avpkt.size() > 0) {
-				len = avcodec.avcodec_decode_video2(c, picture, got_picture,
-						avpkt);
-				if (len < 0) {
-					System.err.printf("Error while decoding frame %d\n", frame);
+			access.setPosition(i, 3);
+
+			for (int x = 0; x < grabber.getImageWidth(); x++) {
+				access.setPosition(x, 0);
+				for (int y = 0; y < grabber.getImageHeight(); y++) {
+					access.setPosition(y, 1);
+
+					int argb = bufferedImage.getRGB(x, y);
+
+					access.setPosition(0, 2);
+					access.get().set(ARGBType.red(argb));
+
+					access.setPosition(1, 2);
+					access.get().set(ARGBType.green(argb));
+
+					access.setPosition(2, 2);
+					access.get().set(ARGBType.blue(argb));
 				}
-				if (got_picture[0] != 0) {
-					System.out.printf("Saving frame %3d\n", frame);
-					String buf = String.format("output", frame);
-					iplImg = IplImage.create(picture.width(), picture.height(),
-							avpkt.size(), 1);
-
-				}
-
 			}
-
 		}
 
-		final ImgPlus<FloatType> wrappedImg = new ImgPlus<FloatType>(img);
+		grabber.stop();
 
 		container.addRowToTable(new DefaultRow("Tims Row", factory
-				.createCell(wrappedImg)));
+				.createCell(new ImgPlus<FloatType>(img))));
 
 		container.close();
 

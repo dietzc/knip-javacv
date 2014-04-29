@@ -4,13 +4,13 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/artoolkitplus.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ffmpeg.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ffmpeg.jar" sourcepath="lib/source/javacv/src/main"/>
 	<classpathentry exported="true" kind="lib" path="lib/flycapture.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javacpp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javacv.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/libdc1394.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/libfreenect.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/opencv.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/opencv.jar" sourcepath="lib/source"/>
 	<classpathentry exported="true" kind="lib" path="lib/videoinput.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
