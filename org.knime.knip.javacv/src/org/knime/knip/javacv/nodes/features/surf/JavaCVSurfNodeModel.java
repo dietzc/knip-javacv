@@ -22,6 +22,8 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
+import org.knime.core.node.defaultnodesettings.SettingsModelDoubleBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.knip.base.node.NodeUtils;
@@ -41,19 +43,45 @@ public class JavaCVSurfNodeModel extends NodeModel {
 	 * the dialog).
 	 */
 	static final String CFGKEY_IMGSELECT = "img_column_selection";
-	static final String CFGKEY_COUNT = "Count";
+	static final String CFGKEY_THRESHOLD = "hessian";
+	static final String CFGKEY_OCTAVES = "octaves";
+	static final String CFGKEY_LAYERS = "layers";
+	static final String CFGKEY_EXTENDED = "extended";
+	static final String CFGKEY_UPRIGHT = "upright";
 
 	/** initial default count value. */
 	static final String DEFAULT_IMGSELECT = "";
-	static final int DEFAULT_COUNT = 100;
+	static final double DEFAULT_THRESHOLD = 2500d;
+	static final int DEFAULT_OCTAVES = 4;
+	static final int DEFAULT_LAYERS = 2;
+	static final boolean DEFAULT_EXTENDED = true;
+	static final boolean DEFAULT_UPRIGHT = false;
 
 	// example value: the models count variable filled from the dialog
 	// and used in the models execution method. The default components of the
 	// dialog work with "SettingsModels".
 	private final SettingsModelString m_imgColumn = new SettingsModelString(
 			CFGKEY_IMGSELECT, DEFAULT_IMGSELECT);
-	private final SettingsModelIntegerBounded m_count = new SettingsModelIntegerBounded(
-			CFGKEY_COUNT, DEFAULT_COUNT, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+	private final SettingsModelDoubleBounded m_threshold = new SettingsModelDoubleBounded(
+			JavaCVSurfNodeModel.CFGKEY_THRESHOLD,
+			JavaCVSurfNodeModel.DEFAULT_THRESHOLD, 0, Integer.MAX_VALUE);
+
+	private final SettingsModelIntegerBounded m_octaves = new SettingsModelIntegerBounded(
+			JavaCVSurfNodeModel.CFGKEY_OCTAVES,
+			JavaCVSurfNodeModel.DEFAULT_OCTAVES, 0, Integer.MAX_VALUE);
+
+	private final SettingsModelIntegerBounded m_layers = new SettingsModelIntegerBounded(
+			JavaCVSurfNodeModel.CFGKEY_LAYERS,
+			JavaCVSurfNodeModel.DEFAULT_LAYERS, 0, Integer.MAX_VALUE);
+
+	private final SettingsModelBoolean m_extended = new SettingsModelBoolean(
+			JavaCVSurfNodeModel.CFGKEY_EXTENDED,
+			JavaCVSurfNodeModel.DEFAULT_EXTENDED);
+
+	private final SettingsModelBoolean m_upright = new SettingsModelBoolean(
+			JavaCVSurfNodeModel.CFGKEY_UPRIGHT,
+			JavaCVSurfNodeModel.DEFAULT_UPRIGHT);
 
 	/**
 	 * Constructor for the node model.
@@ -159,11 +187,12 @@ public class JavaCVSurfNodeModel extends NodeModel {
 	 */
 	@Override
 	protected void saveSettingsTo(final NodeSettingsWO settings) {
-
-		// TODO save user settings to the config object.
-
-		m_count.saveSettingsTo(settings);
-
+		m_imgColumn.saveSettingsTo(settings);
+		m_threshold.saveSettingsTo(settings);
+		m_octaves.saveSettingsTo(settings);
+		m_layers.saveSettingsTo(settings);
+		m_extended.saveSettingsTo(settings);
+		m_upright.saveSettingsTo(settings);
 	}
 
 	/**
@@ -172,13 +201,12 @@ public class JavaCVSurfNodeModel extends NodeModel {
 	@Override
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-
-		// TODO load (valid) settings from the config object.
-		// It can be safely assumed that the settings are valided by the
-		// method below.
-
-		m_count.loadSettingsFrom(settings);
-
+		m_imgColumn.loadSettingsFrom(settings);
+		m_threshold.loadSettingsFrom(settings);
+		m_octaves.loadSettingsFrom(settings);
+		m_layers.loadSettingsFrom(settings);
+		m_extended.loadSettingsFrom(settings);
+		m_upright.loadSettingsFrom(settings);
 	}
 
 	/**
@@ -187,14 +215,12 @@ public class JavaCVSurfNodeModel extends NodeModel {
 	@Override
 	protected void validateSettings(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
-
-		// TODO check if the settings could be applied to our model
-		// e.g. if the count is in a certain range (which is ensured by the
-		// SettingsModel).
-		// Do not actually set any values of any member variables.
-
-		m_count.validateSettings(settings);
-
+		m_imgColumn.validateSettings(settings);
+		m_threshold.validateSettings(settings);
+		m_octaves.validateSettings(settings);
+		m_layers.validateSettings(settings);
+		m_extended.validateSettings(settings);
+		m_upright.validateSettings(settings);
 	}
 
 	/**
@@ -204,14 +230,7 @@ public class JavaCVSurfNodeModel extends NodeModel {
 	protected void loadInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-
-		// TODO load internal data.
-		// Everything handed to output ports is loaded automatically (data
-		// returned by the execute method, models loaded in loadModelContent,
-		// and user settings set through loadSettingsFrom - is all taken care
-		// of). Load here only the other internals that need to be restored
-		// (e.g. data used by the views).
-
+		// nothing to do
 	}
 
 	/**
@@ -221,14 +240,7 @@ public class JavaCVSurfNodeModel extends NodeModel {
 	protected void saveInternals(final File internDir,
 			final ExecutionMonitor exec) throws IOException,
 			CanceledExecutionException {
-
-		// TODO save internal models.
-		// Everything written to output ports is saved automatically (data
-		// returned by the execute method, models saved in the saveModelContent,
-		// and user settings saved through saveSettingsTo - is all taken care
-		// of). Save here only the other internals that need to be preserved
-		// (e.g. data used by the views).
-
+		// nothing to do
 	}
 
 }

@@ -1,8 +1,11 @@
 package org.knime.knip.javacv.nodes.features.surf;
 
 import org.knime.core.node.defaultnodesettings.DefaultNodeSettingsPane;
+import org.knime.core.node.defaultnodesettings.DialogComponentBoolean;
 import org.knime.core.node.defaultnodesettings.DialogComponentColumnNameSelection;
 import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
+import org.knime.core.node.defaultnodesettings.SettingsModelBoolean;
+import org.knime.core.node.defaultnodesettings.SettingsModelDoubleBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.knip.javacv.IplImageValue;
@@ -35,11 +38,36 @@ public class JavaCVSurfNodeDialog extends DefaultNodeSettingsPane {
 		createNewGroup("SURF Options");
 
 		addDialogComponent(new DialogComponentNumber(
-				new SettingsModelIntegerBounded(
-						JavaCVSurfNodeModel.CFGKEY_COUNT,
-						JavaCVSurfNodeModel.DEFAULT_COUNT, Integer.MIN_VALUE,
-						Integer.MAX_VALUE), "Counter:", /* step */1, /* componentwidth */
+				new SettingsModelDoubleBounded(
+						JavaCVSurfNodeModel.CFGKEY_THRESHOLD,
+						JavaCVSurfNodeModel.DEFAULT_THRESHOLD, 0,
+						Integer.MAX_VALUE), "Hessian Threshold:", /* step */
+				1, /* componentwidth */
 				5));
+
+		addDialogComponent(new DialogComponentNumber(
+				new SettingsModelIntegerBounded(
+						JavaCVSurfNodeModel.CFGKEY_OCTAVES,
+						JavaCVSurfNodeModel.DEFAULT_OCTAVES, 0,
+						Integer.MAX_VALUE), "Octaves:", /* step */
+				1, /* componentwidth */
+				5));
+
+		addDialogComponent(new DialogComponentNumber(
+				new SettingsModelIntegerBounded(
+						JavaCVSurfNodeModel.CFGKEY_LAYERS,
+						JavaCVSurfNodeModel.DEFAULT_LAYERS, 0,
+						Integer.MAX_VALUE), "Layers:", /* step */
+				1, /* componentwidth */
+				5));
+
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				JavaCVSurfNodeModel.CFGKEY_EXTENDED,
+				JavaCVSurfNodeModel.DEFAULT_EXTENDED), "Extended?"));
+
+		addDialogComponent(new DialogComponentBoolean(new SettingsModelBoolean(
+				JavaCVSurfNodeModel.CFGKEY_UPRIGHT,
+				JavaCVSurfNodeModel.DEFAULT_UPRIGHT), "Upright?"));
 
 	}
 }
