@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JavaCV Libraries for Mac OS X x86_64
+Bundle-SymbolicName: org.knime.knip.javacv.bin.macosx.x86_64
+Bundle-Version: 0.5.0.qualifier
+Bundle-Vendor: University of Konstanz
+Fragment-Host: org.knime.knip.javacv.base;bundle-version="0.5.0.qualifier"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Eclipse-PlatformFilter: (&(osgi.os=macosx)(osgi.arch=x86_64))
+Bundle-ClassPath: lib/artoolkitplus-macosx-x86_64.jar,
+ lib/ffmpeg-macosx-x86_64.jar,
+ lib/libfreenect-macosx-x86_64.jar,
+ lib/opencv-macosx-x86_64.jar

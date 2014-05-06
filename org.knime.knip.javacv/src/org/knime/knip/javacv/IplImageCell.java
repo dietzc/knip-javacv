@@ -48,7 +48,6 @@ public class IplImageCell extends BlobDataCell implements IplImageValue {
 		@Override
 		public void serialize(final IplImageCell cell,
 				final DataCellDataOutput output) throws IOException {
-			System.out.println("serializing");
 			byte[] array = new byte[cell.m_img.width() * cell.m_img.height()];
 			cell.m_img.getByteBuffer().get(array);
 			output.writeInt(array.length);
@@ -60,11 +59,10 @@ public class IplImageCell extends BlobDataCell implements IplImageValue {
 		 */
 		@Override
 		public IplImageCell deserialize(final DataCellDataInput input)
-				throws IOException {	System.out.println("deserializing");
+				throws IOException {
 			byte[] array = new byte[input.readInt()];
 			input.readFully(array);
-			IplImage img = new IplImage(new PointerPointer(array));
-
+			IplImage img = new IplImage(new PointerPointer<>(array));
 			return new IplImageCell(img);
 		}
 	}
