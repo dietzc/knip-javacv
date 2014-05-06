@@ -6,7 +6,6 @@ import org.knime.core.node.defaultnodesettings.DialogComponentNumber;
 import org.knime.core.node.defaultnodesettings.SettingsModelIntegerBounded;
 import org.knime.core.node.defaultnodesettings.SettingsModelString;
 import org.knime.knip.javacv.IplImageValue;
-import org.knime.knip.javacv.nodes.io.conversion.IplImageToPNGImageNodeModel;
 
 /**
  * <code>NodeDialog</code> for the "JavaCVSurf" Node. OpenCV Surf
