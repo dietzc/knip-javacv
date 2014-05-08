@@ -58,6 +58,7 @@ import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 
 import org.bytedeco.javacpp.opencv_core.IplImage;
@@ -102,57 +103,100 @@ public class TestIONodeModel extends NodeModel {
 				.createDataContainer(createOutSpec());
 
 		// X,Y,Time
-		final Img<FloatType> img;
 
 		// HIER: BefÃ¼lle Img mit daten aus orginal img die du via JavaCV
 		// einliest.
 
 		// String path = "C:\myfile\...".
 
-		final String path = "c:\\1-2-2.m4v";
+		final String path = "C:\\CurrentImageData\\belgien_tracking\\2014-02-07-7dpf_ctrl_AB_c1_0001.mpeg";
 
 		FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(path);
 		grabber.setFrameNumber(0);
 		grabber.start();
 
-		int samplingRate = 40;
-		System.out.println(grabber.getLengthInFrames());
-
+		int dimensionZ = 195;
+		int numberOfRows = grabber.getLengthInFrames() / dimensionZ;
 		BufferedImage init = grabber.grab().getBufferedImage();
-		img = new ArrayImgFactory<FloatType>().create(
-				new long[] { init.getWidth(), init.getHeight(), 3,
-						grabber.getLengthInFrames() / 40 }, new FloatType());
+		for (int j = 0; j < numberOfRows; j++) {
+			
 
-		final RandomAccess<FloatType> access = img.randomAccess();
-		for (int i = 0; i < img.dimension(3); i++) {
-			grabber.setFrameNumber(i * 40);
-			BufferedImage bufferedImage = grabber.grab().getBufferedImage();
+			Img<UnsignedByteType> img = new ArrayImgFactory<UnsignedByteType>().create(
+					new long[] { init.getWidth(), init.getHeight(), 1,
+							dimensionZ },
+					new UnsignedByteType());
+			
+			BufferedImage bufferedImage = new BufferedImage(init.getWidth(), init.getHeight(), init.getType());
 
-			access.setPosition(i, 3);
+			final RandomAccess<UnsignedByteType> access = img.randomAccess();
+			for (int i = 0; i < img.dimension(3); i++) {
+				grabber.setFrameNumber(i + j * numberOfRows);
 
-			for (int x = 0; x < grabber.getImageWidth(); x++) {
-				access.setPosition(x, 0);
-				for (int y = 0; y < grabber.getImageHeight(); y++) {
-					access.setPosition(y, 1);
+				bufferedImage = grabber.grab().getBufferedImage();
 
-					int argb = bufferedImage.getRGB(x, y);
+				access.setPosition(i, 3);
 
-					access.setPosition(0, 2);
-					access.get().set(ARGBType.red(argb));
-
-					access.setPosition(1, 2);
-					access.get().set(ARGBType.green(argb));
-
-					access.setPosition(2, 2);
-					access.get().set(ARGBType.blue(argb));
+				for (int x = 0; x < bufferedImage.getWidth(); x++) {
+					access.setPosition(x, 0);
+					for (int y = 0; y < bufferedImage.getHeight(); y++) {
+						access.setPosition(y, 1);
+						
+						int argb = bufferedImage.getRGB(x, y);
+						
+						access.setPosition(0, 2);
+						access.get().set(ARGBType.red(argb));
+						
+//						 access.setPosition(1, 2);
+//						 access.get().set(ARGBType.green(argb));
+//						
+//						 access.setPosition(2, 2);
+//						 access.get().set(ARGBType.blue(argb));
+					}
 				}
+				bufferedImage.flush();
 			}
+			container.addRowToTable(new DefaultRow("Tims Row" + j, factory
+					.createCell(new ImgPlus<UnsignedByteType>(img))));
+
 		}
 
-		grabber.stop();
+		int w = grabber.getLengthInFrames() - numberOfRows*dimensionZ;
+		if (w > 0) {
+			Img<UnsignedByteType> img = new ArrayImgFactory<UnsignedByteType>().create(
+					new long[] { init.getWidth(), init.getHeight(), 1,
+							w},
+					new UnsignedByteType());
 
-		container.addRowToTable(new DefaultRow("Tims Row", factory
-				.createCell(new ImgPlus<FloatType>(img))));
+			final RandomAccess<UnsignedByteType> access = img.randomAccess();
+			for (int i = 0; i < img.dimension(3); i++) {
+				grabber.setFrameNumber(grabber.getLengthInFrames() - w + i);
+				BufferedImage bufferedImage = grabber.grab().getBufferedImage();
+
+				access.setPosition(i, 3);
+
+				for (int x = 0; x < grabber.getImageWidth(); x++) {
+					access.setPosition(x, 0);
+					for (int y = 0; y < grabber.getImageHeight(); y++) {
+						access.setPosition(y, 1);
+
+						int argb = bufferedImage.getRGB(x, y);
+
+						access.setPosition(0, 2);
+						access.get().set(ARGBType.red(argb));
+
+//						 access.setPosition(1, 2);
+//						 access.get().set(ARGBType.green(argb));
+//						
+//						 access.setPosition(2, 2);
+//						 access.get().set(ARGBType.blue(argb));
+					}
+				}
+			}
+			container.addRowToTable(new DefaultRow("Tims Row" + numberOfRows, factory
+					.createCell(new ImgPlus<UnsignedByteType>(img))));
+		}
+		
+		grabber.stop();
 
 		container.close();
 
