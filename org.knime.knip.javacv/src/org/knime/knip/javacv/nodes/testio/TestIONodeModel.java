@@ -50,19 +50,20 @@
 package org.knime.knip.javacv.nodes.testio;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
-import net.imglib2.RandomAccess;
-import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.meta.ImgPlus;
-import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
-import net.imglib2.type.numeric.real.FloatType;
 
 import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.Frame;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.DefaultRow;
@@ -83,6 +84,8 @@ import org.knime.knip.base.data.img.ImgPlusCellFactory;
  */
 public class TestIONodeModel extends NodeModel {
 
+	private ImgPlusCellFactory m_imgPlusFactory;
+
 	protected TestIONodeModel() {
 		super(0, 1);
 	}
@@ -97,110 +100,56 @@ public class TestIONodeModel extends NodeModel {
 	protected BufferedDataTable[] execute(final BufferedDataTable[] inData,
 			final ExecutionContext exec) throws Exception {
 
-		final ImgPlusCellFactory factory = new ImgPlusCellFactory(exec);
+		m_imgPlusFactory = new ImgPlusCellFactory(exec);
 
 		final BufferedDataContainer container = exec
 				.createDataContainer(createOutSpec());
 
-		// X,Y,Time
-
-		// HIER: BefÃ¼lle Img mit daten aus orginal img die du via JavaCV
-		// einliest.
-
-		// String path = "C:\myfile\...".
-
 		final String path = "C:\\CurrentImageData\\belgien_tracking\\2014-02-07-7dpf_ctrl_AB_c1_0001.mpeg";
+		int timeIdx = 0;
 
-		FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(path);
-		grabber.setFrameNumber(0);
+		final FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(path);
+
 		grabber.start();
 
-		int dimensionZ = 195;
-		int numberOfRows = grabber.getLengthInFrames() / dimensionZ;
-		BufferedImage init = grabber.grab().getBufferedImage();
-		for (int j = 0; j < numberOfRows; j++) {
-			
+		try {
+			while (timeIdx < 10000) {
 
-			Img<UnsignedByteType> img = new ArrayImgFactory<UnsignedByteType>().create(
-					new long[] { init.getWidth(), init.getHeight(), 1,
-							dimensionZ },
-					new UnsignedByteType());
-			
-			BufferedImage bufferedImage = new BufferedImage(init.getWidth(), init.getHeight(), init.getType());
-
-			final RandomAccess<UnsignedByteType> access = img.randomAccess();
-			for (int i = 0; i < img.dimension(3); i++) {
-				grabber.setFrameNumber(i + j * numberOfRows);
-
-				bufferedImage = grabber.grab().getBufferedImage();
-
-				access.setPosition(i, 3);
-
-				for (int x = 0; x < bufferedImage.getWidth(); x++) {
-					access.setPosition(x, 0);
-					for (int y = 0; y < bufferedImage.getHeight(); y++) {
-						access.setPosition(y, 1);
-						
-						int argb = bufferedImage.getRGB(x, y);
-						
-						access.setPosition(0, 2);
-						access.get().set(ARGBType.red(argb));
-						
-//						 access.setPosition(1, 2);
-//						 access.get().set(ARGBType.green(argb));
-//						
-//						 access.setPosition(2, 2);
-//						 access.get().set(ARGBType.blue(argb));
-					}
-				}
-				bufferedImage.flush();
+				createImgPlusAndAddToContainer(
+						((DataBufferByte) grabber.grab().getBufferedImage()
+								.getRaster().getDataBuffer()).getData(),
+						container, timeIdx++);
 			}
-			container.addRowToTable(new DefaultRow("Tims Row" + j, factory
-					.createCell(new ImgPlus<UnsignedByteType>(img))));
-
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			grabber.stop();
 		}
-
-		int w = grabber.getLengthInFrames() - numberOfRows*dimensionZ;
-		if (w > 0) {
-			Img<UnsignedByteType> img = new ArrayImgFactory<UnsignedByteType>().create(
-					new long[] { init.getWidth(), init.getHeight(), 1,
-							w},
-					new UnsignedByteType());
-
-			final RandomAccess<UnsignedByteType> access = img.randomAccess();
-			for (int i = 0; i < img.dimension(3); i++) {
-				grabber.setFrameNumber(grabber.getLengthInFrames() - w + i);
-				BufferedImage bufferedImage = grabber.grab().getBufferedImage();
-
-				access.setPosition(i, 3);
-
-				for (int x = 0; x < grabber.getImageWidth(); x++) {
-					access.setPosition(x, 0);
-					for (int y = 0; y < grabber.getImageHeight(); y++) {
-						access.setPosition(y, 1);
-
-						int argb = bufferedImage.getRGB(x, y);
-
-						access.setPosition(0, 2);
-						access.get().set(ARGBType.red(argb));
-
-//						 access.setPosition(1, 2);
-//						 access.get().set(ARGBType.green(argb));
-//						
-//						 access.setPosition(2, 2);
-//						 access.get().set(ARGBType.blue(argb));
-					}
-				}
-			}
-			container.addRowToTable(new DefaultRow("Tims Row" + numberOfRows, factory
-					.createCell(new ImgPlus<UnsignedByteType>(img))));
-		}
-		
-		grabber.stop();
 
 		container.close();
 
 		return new BufferedDataTable[] { container.getTable() };
+	}
+
+	private void createImgPlusAndAddToContainer(byte[] buffer,
+			final BufferedDataContainer container, int idx) throws IOException {
+
+		final int width = 1024;
+		final int height = 768;
+
+		final ArrayImg<UnsignedByteType, ?> img = new ArrayImgFactory<UnsignedByteType>()
+				.create(new long[] { width, height }, new UnsignedByteType());
+
+		final byte[] update = ((ByteArray) img.update(null))
+				.getCurrentStorageArray();
+
+		for (int i = 0; i < update.length; i++) {
+			update[i] = buffer[i * 3];
+		}
+
+		container.addRowToTable(new DefaultRow("" + idx, m_imgPlusFactory
+				.createCell(new ImgPlus<>(img))));
+
 	}
 
 	private DataTableSpec createOutSpec() {
@@ -258,4 +207,5 @@ public class TestIONodeModel extends NodeModel {
 	protected void loadValidatedSettingsFrom(final NodeSettingsRO settings)
 			throws InvalidSettingsException {
 	}
+
 }
