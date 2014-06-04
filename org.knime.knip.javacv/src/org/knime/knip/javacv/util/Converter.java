@@ -12,6 +12,7 @@ import static org.bytedeco.javacpp.opencv_core.IPL_DEPTH_8U;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImg;
+import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
@@ -165,5 +166,68 @@ public class Converter {
 
 		throw new UnsupportedOperationException(type.getClass().getSimpleName()
 				+ " is not supported");
+	}
+
+	public static <T extends RealType<T> & NativeType<T>> Img<T> createImg(
+			IplImage input) {
+
+		int width = input.width();
+		int height = input.height();
+		int depth = input.depth();
+		int channels = input.nChannels();
+
+		Img<T> img = null;
+
+		if (depth == IPL_DEPTH_1U) {
+			ArrayImg<BitType, BitArray> bits = ArrayImgs.bits(width, height,
+					channels);
+			input.getIntBuffer()
+					.get(bits.update(null).getCurrentStorageArray());
+			img = (Img<T>) bits;
+		} else if (depth == IPL_DEPTH_8S) {
+			ArrayImg<ByteType, ByteArray> bytes = ArrayImgs.bytes(width,
+					height, channels);
+			input.getByteBuffer().get(
+					bytes.update(null).getCurrentStorageArray());
+			img = (Img<T>) bytes;
+		} else if (depth == IPL_DEPTH_8U) {
+			ArrayImg<UnsignedByteType, ByteArray> unsignedBytes = ArrayImgs
+					.unsignedBytes(width, height, channels);
+			input.getByteBuffer().get(
+					unsignedBytes.update(null).getCurrentStorageArray());
+			img = (Img<T>) unsignedBytes;
+		} else if (depth == IPL_DEPTH_16S) {
+			ArrayImg<ShortType, ShortArray> shorts = ArrayImgs.shorts(width,
+					height, channels);
+			input.getShortBuffer().get(
+					shorts.update(null).getCurrentStorageArray());
+			img = (Img<T>) shorts;
+		} else if (depth == IPL_DEPTH_16U) {
+			ArrayImg<UnsignedShortType, ShortArray> unsignedShorts = ArrayImgs
+					.unsignedShorts(width, height, channels);
+			input.getShortBuffer().get(
+					unsignedShorts.update(null).getCurrentStorageArray());
+			img = (Img<T>) unsignedShorts;
+		} else if (depth == IPL_DEPTH_32S) {
+			ArrayImg<IntType, IntArray> ints = ArrayImgs.ints(width, height,
+					channels);
+			input.getIntBuffer()
+					.get(ints.update(null).getCurrentStorageArray());
+			img = (Img<T>) ints;
+		} else if (depth == IPL_DEPTH_32F) {
+			ArrayImg<FloatType, FloatArray> floats = ArrayImgs.floats(width,
+					height, channels);
+			input.getFloatBuffer().get(
+					floats.update(null).getCurrentStorageArray());
+			img = (Img<T>) floats;
+		} else if (depth == IPL_DEPTH_64F) {
+			ArrayImg<DoubleType, DoubleArray> doubles = ArrayImgs.doubles(
+					width, height, channels);
+			input.getDoubleBuffer().get(
+					doubles.update(null).getCurrentStorageArray());
+			img = (Img<T>) doubles;
+		}
+
+		return img;
 	}
 }
