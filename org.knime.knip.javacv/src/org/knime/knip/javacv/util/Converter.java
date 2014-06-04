@@ -110,34 +110,35 @@ public class Converter {
 		int channels = (int) ((input.numDimensions() == 3) ? input.dimension(2)
 				: 1);
 		int depth = getDepth(type, channels);
+		int size = width * height * channels;
 
 		IplImage ii = IplImage.create(width, height, depth, channels);
 
 		if (type instanceof BitType) {
 			ArrayImg<BitType, BitArray> img = (ArrayImg<BitType, BitArray>) input;
 			int[] data = img.update(null).getCurrentStorageArray();
-			ii.getIntBuffer().put(data);
+			System.arraycopy(data, 0, ii.getIntBuffer().array(), 0, size);
 		} else if (type instanceof ByteType || type instanceof UnsignedByteType) {
 			ArrayImg<?, ByteArray> img = (ArrayImg<?, ByteArray>) input;
 			byte[] data = img.update(null).getCurrentStorageArray();
-			ii.getByteBuffer().put(data);
+			System.arraycopy(data, 0, ii.getByteBuffer().array(), 0, size);
 		} else if (type instanceof ShortType
 				|| type instanceof UnsignedShortType) {
 			ArrayImg<?, ShortArray> img = (ArrayImg<?, ShortArray>) input;
 			short[] data = img.update(null).getCurrentStorageArray();
-			ii.getShortBuffer().put(data);
+			System.arraycopy(data, 0, ii.getShortBuffer().array(), 0, size);
 		} else if (type instanceof IntType) {
 			ArrayImg<?, IntArray> img = (ArrayImg<?, IntArray>) input;
 			int[] data = img.update(null).getCurrentStorageArray();
-			ii.getIntBuffer().put(data);
+			System.arraycopy(data, 0, ii.getIntBuffer().array(), 0, size);
 		} else if (type instanceof FloatType) {
 			ArrayImg<?, FloatArray> img = (ArrayImg<?, FloatArray>) input;
 			float[] data = img.update(null).getCurrentStorageArray();
-			ii.getFloatBuffer().put(data);
+			System.arraycopy(data, 0, ii.getFloatBuffer().array(), 0, size);
 		} else if (type instanceof DoubleType) {
 			ArrayImg<?, DoubleArray> img = (ArrayImg<?, DoubleArray>) input;
 			double[] data = img.update(null).getCurrentStorageArray();
-			ii.getDoubleBuffer().put(data);
+			System.arraycopy(data, 0, ii.getDoubleBuffer().array(), 0, size);
 		}
 
 		return ii;
@@ -175,56 +176,73 @@ public class Converter {
 		int height = input.height();
 		int depth = input.depth();
 		int channels = input.nChannels();
+		int size = width * height * channels;
 
 		Img<T> img = null;
 
 		if (depth == IPL_DEPTH_1U) {
 			ArrayImg<BitType, BitArray> bits = ArrayImgs.bits(width, height,
 					channels);
-			input.getIntBuffer()
-					.get(bits.update(null).getCurrentStorageArray());
+
+			System.arraycopy(input.getIntBuffer().array(), 0,
+					bits.update(null), 0, size);
+
 			img = (Img<T>) bits;
 		} else if (depth == IPL_DEPTH_8S) {
 			ArrayImg<ByteType, ByteArray> bytes = ArrayImgs.bytes(width,
 					height, channels);
-			input.getByteBuffer().get(
-					bytes.update(null).getCurrentStorageArray());
+
+			System.arraycopy(input.getByteBuffer().array(), 0,
+					bytes.update(null), 0, size);
+
 			img = (Img<T>) bytes;
 		} else if (depth == IPL_DEPTH_8U) {
 			ArrayImg<UnsignedByteType, ByteArray> unsignedBytes = ArrayImgs
 					.unsignedBytes(width, height, channels);
-			input.getByteBuffer().get(
-					unsignedBytes.update(null).getCurrentStorageArray());
+
+			System.arraycopy(input.getByteBuffer().array(), 0,
+					unsignedBytes.update(null), 0, size);
+
 			img = (Img<T>) unsignedBytes;
 		} else if (depth == IPL_DEPTH_16S) {
 			ArrayImg<ShortType, ShortArray> shorts = ArrayImgs.shorts(width,
 					height, channels);
-			input.getShortBuffer().get(
-					shorts.update(null).getCurrentStorageArray());
+
+			System.arraycopy(input.getShortBuffer().array(), 0,
+					shorts.update(null), 0, size);
+
 			img = (Img<T>) shorts;
 		} else if (depth == IPL_DEPTH_16U) {
 			ArrayImg<UnsignedShortType, ShortArray> unsignedShorts = ArrayImgs
 					.unsignedShorts(width, height, channels);
-			input.getShortBuffer().get(
-					unsignedShorts.update(null).getCurrentStorageArray());
+
+			System.arraycopy(input.getShortBuffer().array(), 0,
+					unsignedShorts.update(null), 0, size);
+
 			img = (Img<T>) unsignedShorts;
+
 		} else if (depth == IPL_DEPTH_32S) {
 			ArrayImg<IntType, IntArray> ints = ArrayImgs.ints(width, height,
 					channels);
-			input.getIntBuffer()
-					.get(ints.update(null).getCurrentStorageArray());
+
+			System.arraycopy(input.getIntBuffer().array(), 0,
+					ints.update(null), 0, size);
+
 			img = (Img<T>) ints;
 		} else if (depth == IPL_DEPTH_32F) {
 			ArrayImg<FloatType, FloatArray> floats = ArrayImgs.floats(width,
 					height, channels);
-			input.getFloatBuffer().get(
-					floats.update(null).getCurrentStorageArray());
+
+			System.arraycopy(input.getFloatBuffer().array(), 0,
+					floats.update(null), 0, size);
+
 			img = (Img<T>) floats;
 		} else if (depth == IPL_DEPTH_64F) {
 			ArrayImg<DoubleType, DoubleArray> doubles = ArrayImgs.doubles(
 					width, height, channels);
-			input.getDoubleBuffer().get(
-					doubles.update(null).getCurrentStorageArray());
+			System.arraycopy(input.getDoubleBuffer().array(), 0,
+					doubles.update(null), 0, size);
+
 			img = (Img<T>) doubles;
 		}
 
