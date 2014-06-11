@@ -76,6 +76,7 @@ import org.knime.core.node.InvalidSettingsException;
 import org.knime.core.node.NodeModel;
 import org.knime.core.node.NodeSettingsRO;
 import org.knime.core.node.NodeSettingsWO;
+import org.knime.core.node.defaultnodesettings.SettingsModelStringArray;
 import org.knime.knip.base.data.img.ImgPlusCell;
 import org.knime.knip.base.data.img.ImgPlusCellFactory;
 
@@ -83,6 +84,13 @@ import org.knime.knip.base.data.img.ImgPlusCellFactory;
  * @author dietzc, University of Konstanz
  */
 public class TestIONodeModel extends NodeModel {
+	
+	public static final String CFG_FILE_LIST = "file_list";
+	
+	public static final String CFG_DIR_HISTORY = "imagereader_dirhistory";
+	
+	private final SettingsModelStringArray m_files = new SettingsModelStringArray(
+			CFG_FILE_LIST, new String[] {});
 
 	private ImgPlusCellFactory m_imgPlusFactory;
 
@@ -104,21 +112,27 @@ public class TestIONodeModel extends NodeModel {
 
 		final BufferedDataContainer container = exec
 				.createDataContainer(createOutSpec());
-
 		final String path = "C:\\CurrentImageData\\belgien_tracking\\2014-02-07-7dpf_ctrl_AB_c1_0001.mpeg";
 		int timeIdx = 0;
 
 		final FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(path);
-
 		grabber.start();
 
 		try {
-			while (timeIdx < 10000) {
-
+			while (true) {
+				if(timeIdx % 5 == 0) {
+					
+					// do this multi threaded. but be aware of the time idx (i.e. add a time idx column to sort the table in knime afterwards)
 				createImgPlusAndAddToContainer(
 						((DataBufferByte) grabber.grab().getBufferedImage()
 								.getRaster().getDataBuffer()).getData(),
 						container, timeIdx++);
+				}
+				else
+				{
+					timeIdx++;
+					grabber.grab();
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

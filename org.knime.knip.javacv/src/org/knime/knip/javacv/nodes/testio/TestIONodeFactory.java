@@ -48,10 +48,6 @@ public class TestIONodeFactory extends NodeFactory<TestIONodeModel> {
 	 */
 	@Override
 	protected NodeDialogPane createNodeDialogPane() {
-		return new DefaultNodeSettingsPane() {
-			{
-
-			}
-		};
+		return new TestIONodeDialog();
 	}
 }

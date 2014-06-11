@@ -25,3 +25,7 @@ Bundle-ClassPath: knip_javacv.jar,
  lib/videoinput.jar
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.knime.knip.javacv.JavaCVNodeActivator
+Import-Package: io.scif,
+ loci.formats,
+ org.knime.knip.io,
+ org.knime.knip.io.node.dialog
