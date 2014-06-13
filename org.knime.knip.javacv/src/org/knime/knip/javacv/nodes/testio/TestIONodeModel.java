@@ -49,11 +49,9 @@
  */
 package org.knime.knip.javacv.nodes.testio;
 
-import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -61,9 +59,7 @@ import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
-import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.Frame;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
 import org.knime.core.data.def.DefaultRow;
@@ -105,7 +101,7 @@ public class TestIONodeModel extends NodeModel {
 		final BufferedDataContainer container = exec
 				.createDataContainer(createOutSpec());
 
-		final String path = "C:\\CurrentImageData\\belgien_tracking\\2014-02-07-7dpf_ctrl_AB_c1_0001.mpeg";
+		final String path = "/home/dietzc/dietzc85@googlemail.com/projects/Leuven/2014-02-10 - 5dpf ctrl uninjected AB_c1_0001.avi";
 		int timeIdx = 0;
 
 		final FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(path);
@@ -113,14 +109,17 @@ public class TestIONodeModel extends NodeModel {
 		grabber.start();
 
 		try {
-			while (timeIdx < 10000) {
+			while (true) {
 
-				createImgPlusAndAddToContainer(
-						((DataBufferByte) grabber.grab().getBufferedImage()
-								.getRaster().getDataBuffer()).getData(),
-						container, timeIdx++);
+				if (timeIdx % 15 == 0) {
+					createImgPlusAndAddToContainer(((DataBufferByte) grabber
+							.grab().getBufferedImage().getRaster()
+							.getDataBuffer()).getData(), container, timeIdx);
+				}
+				grabber.grab();
+				timeIdx++;
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		} finally {
 			grabber.stop();
@@ -131,8 +130,9 @@ public class TestIONodeModel extends NodeModel {
 		return new BufferedDataTable[] { container.getTable() };
 	}
 
-	private void createImgPlusAndAddToContainer(byte[] buffer,
-			final BufferedDataContainer container, int idx) throws IOException {
+	private void createImgPlusAndAddToContainer(final byte[] buffer,
+			final BufferedDataContainer container, final int idx)
+			throws IOException {
 
 		final int width = 1024;
 		final int height = 768;
