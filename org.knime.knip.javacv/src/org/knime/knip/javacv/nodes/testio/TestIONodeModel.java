@@ -110,7 +110,10 @@ public class TestIONodeModel extends NodeModel {
 				.createDataContainer(createOutSpec());
 
 //		final String path = "/home/dietzc/dietzc85@googlemail.com/projects/Leuven/2014-02-10 - 5dpf ctrl uninjected AB_c1_0001.avi";
-		final String path = "C:\\CurrentImageData\\belgien_tracking\\2014-02-07-7dpf_ctrl_AB_c1_0001.mpeg";
+		final String path = "/media/dietzc/Daten/imagedata/leuven/Zebrafish/Videos/5dpf scn1lab ATG plate 2 - 2014-06-17_c1_0001.avi";
+		final int frameRate = 15;
+
+		
 		int timeIdx = 0;
 
 		final FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(path);
@@ -119,7 +122,7 @@ public class TestIONodeModel extends NodeModel {
 		try {
 			while (true) {
 
-				if (timeIdx % 15 == 0) {
+				if (timeIdx % frameRate == 0) {
 					createImgPlusAndAddToContainer(((DataBufferByte) grabber
 							.grab().getBufferedImage().getRaster()
 							.getDataBuffer()).getData(), container, timeIdx);
