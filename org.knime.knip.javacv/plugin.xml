@@ -3,7 +3,6 @@
 
 <plugin>
 	<extension point="org.knime.workbench.repository.nodes">
-		<node expert-flag="false" factory-class="org.knime.knip.javacv.nodes.testio.TestIONodeFactory" id="org.knime.knip.javacv.nodes.testio.TestIONodeFactory" />
 		<node category-path="/" factory-class="org.knime.knip.javacv.nodes.features.surf.JavaCVSurfNodeFactory" id="org.knime.knip.javacv.nodes.features.surf.JavaCVSurfNodeFactory"/>
 	</extension>
 	<extension point="org.knime.workbench.repository.categories">
