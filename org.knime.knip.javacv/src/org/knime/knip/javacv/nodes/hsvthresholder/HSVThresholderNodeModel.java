@@ -1,10 +1,7 @@
 package org.knime.knip.javacv.nodes.hsvthresholder;
 
-import static com.googlecode.javacv.cpp.opencv_core.cvInRangeS;
-import static com.googlecode.javacv.cpp.opencv_core.cvScalar;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2HSV;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
-
+import org.bytedeco.javacpp.opencv_core.CvScalar;
+import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -22,8 +19,9 @@ import org.knime.knip.javacv.IplImageCell;
 import org.knime.knip.javacv.IplImageValue;
 import org.knime.knip.javacv.nodes.io.webcam.SimpleStreamableNodeModel;
 
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
+
 
 public class HSVThresholderNodeModel extends SimpleStreamableFunctionNodeModel
 		implements SimpleStreamableNodeModel {

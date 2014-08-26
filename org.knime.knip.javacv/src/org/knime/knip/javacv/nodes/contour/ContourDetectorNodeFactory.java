@@ -3,7 +3,6 @@ package org.knime.knip.javacv.nodes.contour;
 import org.knime.core.node.NodeDialogPane;
 import org.knime.core.node.NodeFactory;
 import org.knime.core.node.NodeView;
-import org.knime.knip.javacv.IplImageStreamingView;
 
 /**
  * 

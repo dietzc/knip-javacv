@@ -9,10 +9,9 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.knime.core.node.NodeView;
 import org.knime.knip.javacv.ViewPanel;
-
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class InteractiveThresholdingStreamingView extends
 		NodeView<HSVThresholderNodeModel> {

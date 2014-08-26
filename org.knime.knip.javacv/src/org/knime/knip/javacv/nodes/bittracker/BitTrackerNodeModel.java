@@ -1,10 +1,15 @@
 package org.knime.knip.javacv.nodes.bittracker;
 
-import static com.googlecode.javacv.cpp.opencv_core.cvLine;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetCentralMoment;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvGetSpatialMoment;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvMoments;
+import static org.bytedeco.javacpp.opencv_core.cvLine;
+import static org.bytedeco.javacpp.opencv_core.cvPoint;
+import static org.bytedeco.javacpp.opencv_imgproc.cvGetCentralMoment;
+import static org.bytedeco.javacpp.opencv_imgproc.cvGetSpatialMoment;
+import static org.bytedeco.javacpp.opencv_imgproc.cvMoments;
 
+import org.bytedeco.javacpp.opencv_core.CvPoint;
+import org.bytedeco.javacpp.opencv_core.CvScalar;
+import org.bytedeco.javacpp.opencv_core.IplImage;
+import org.bytedeco.javacpp.opencv_imgproc.CvMoments;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -21,11 +26,6 @@ import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 import org.knime.knip.javacv.IplImageCell;
 import org.knime.knip.javacv.IplImageValue;
 import org.knime.knip.javacv.nodes.io.webcam.SimpleStreamableNodeModel;
-
-import com.googlecode.javacv.cpp.opencv_core.CvPoint;
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
-import com.googlecode.javacv.cpp.opencv_imgproc.CvMoments;
 
 public class BitTrackerNodeModel extends SimpleStreamableFunctionNodeModel
 		implements SimpleStreamableNodeModel {
@@ -105,8 +105,8 @@ public class BitTrackerNodeModel extends SimpleStreamableFunctionNodeModel
 				int posY = (int) (momY01 / area);
 
 				if (posX != 0 && posY != 0 && m_lastX != 0 && m_lastY != 0) {
-					cvLine(m_scribble, new CvPoint(posX, posY), new CvPoint(
-							m_lastX, m_lastY), m_lineColor, 3, 0, 0);
+					cvLine(m_scribble, cvPoint(posX, posY),
+							cvPoint(m_lastX, m_lastY), m_lineColor, 3, 0, 0);
 				}
 
 				m_lastX = posX;

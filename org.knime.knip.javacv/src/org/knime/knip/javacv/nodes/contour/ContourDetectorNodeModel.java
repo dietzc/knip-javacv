@@ -1,17 +1,11 @@
 package org.knime.knip.javacv.nodes.contour;
 
-import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
-import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
-import static com.googlecode.javacv.cpp.opencv_core.cvDrawContours;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_CHAIN_APPROX_SIMPLE;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_POLY_APPROX_DP;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_RETR_LIST;
-import static com.googlecode.javacv.cpp.opencv_imgproc.CV_THRESH_BINARY;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvApproxPoly;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvContourPerimeter;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvFindContours;
-import static com.googlecode.javacv.cpp.opencv_imgproc.cvThreshold;
-
+import org.bytedeco.javacpp.Loader;
+import org.bytedeco.javacpp.opencv_core.CvContour;
+import org.bytedeco.javacpp.opencv_core.CvMemStorage;
+import org.bytedeco.javacpp.opencv_core.CvScalar;
+import org.bytedeco.javacpp.opencv_core.CvSeq;
+import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -29,12 +23,8 @@ import org.knime.knip.javacv.IplImageCell;
 import org.knime.knip.javacv.IplImageValue;
 import org.knime.knip.javacv.nodes.io.webcam.SimpleStreamableNodeModel;
 
-import com.googlecode.javacpp.Loader;
-import com.googlecode.javacv.cpp.opencv_core.CvContour;
-import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
-import com.googlecode.javacv.cpp.opencv_core.CvScalar;
-import com.googlecode.javacv.cpp.opencv_core.CvSeq;
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import static org.bytedeco.javacpp.opencv_core.*;
+import static org.bytedeco.javacpp.opencv_imgproc.*;
 
 public class ContourDetectorNodeModel extends SimpleStreamableFunctionNodeModel
 		implements SimpleStreamableNodeModel {

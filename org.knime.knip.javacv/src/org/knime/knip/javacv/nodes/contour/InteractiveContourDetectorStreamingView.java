@@ -3,16 +3,14 @@ package org.knime.knip.javacv.nodes.contour;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.StringTokenizer;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.knime.core.node.NodeView;
 import org.knime.knip.javacv.ViewPanel;
-
-import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public class InteractiveContourDetectorStreamingView extends
 		NodeView<ContourDetectorNodeModel> {
