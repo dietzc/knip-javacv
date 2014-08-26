@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import org.bytedeco.javacpp.opencv_core.IplImage;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.OpenCVFrameGrabber;
 import org.bytedeco.javacv.VideoInputFrameGrabber;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
@@ -41,6 +43,7 @@ public class WebCamIONodeModel extends NodeModel implements
 
 	}
 
+	
 	/** {@inheritDoc} */
 	@Override
 	public OutputPortRole[] getOutputPortRoles() {
@@ -182,14 +185,14 @@ public class WebCamIONodeModel extends NodeModel implements
 	}
 
 	private class ImageProducer {
-		private VideoInputFrameGrabber m_grabber;
+		private OpenCVFrameGrabber m_grabber;
 
 		public ImageProducer()
 				throws org.bytedeco.javacv.FrameRecorder.Exception,
 				org.bytedeco.javacv.FrameGrabber.Exception {
 			m_grabber = null;
 			try {
-				m_grabber = new VideoInputFrameGrabber(1);
+				m_grabber = new OpenCVFrameGrabber(0);
 			} finally {
 				m_grabber.stop();
 			}

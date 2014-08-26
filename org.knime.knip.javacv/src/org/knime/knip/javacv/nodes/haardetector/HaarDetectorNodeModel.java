@@ -32,7 +32,7 @@ public class HaarDetectorNodeModel extends SimpleStreamableFunctionNodeModel
 	private IplImage m_currentImg;
 
 	private static CvHaarClassifierCascade m_classifier = new CvHaarClassifierCascade(
-			cvLoad("c:\\haarcascade_frontalface_alt.xml"));
+			cvLoad("/home/dietzc/devel/repos/knip-javacv/org.knime.knip.javacv/res/haarcascade_frontalface_default.xml"));
 
 	private CellFactory m_cellFactory;
 

@@ -3,7 +3,30 @@
 
 <plugin>
 	<extension point="org.knime.workbench.repository.nodes">
-		<node category-path="/" factory-class="org.knime.knip.javacv.nodes.features.surf.JavaCVSurfNodeFactory" id="org.knime.knip.javacv.nodes.features.surf.JavaCVSurfNodeFactory"/>
+  <node
+        category-path="/community/knip/javacv"
+        expert-flag="false"
+        factory-class="org.knime.knip.javacv.nodes.io.webcam.WebCamIONodeFactory"
+        id="org.knime.knip.javacv.nodes.io.webcam.WebCamIONodeFactory">
+  </node>
+  <node
+        category-path="/community/knip/javacv"
+        expert-flag="false"
+        factory-class="org.knime.knip.javacv.nodes.haardetector.HaarDetectorNodeFactory"
+        id="org.knime.knip.javacv.nodes.haardetector.HaarDetectorNodeFactory">
+  </node>
+  <node
+        category-path="/community/knip/javacv"
+        expert-flag="false"
+        factory-class="org.knime.knip.javacv.nodes.greyConverter.GreyConverterNodeFactory"
+        id="org.knime.knip.javacv.nodes.greyConverter.GreyConverterNodeFactory">
+  </node>
+  <node
+        category-path="/community/knip/javacv"
+        expert-flag="false"
+        factory-class="org.knime.knip.javacv.nodes.io.reader.TestIONodeFactory"
+        id="org.knime.knip.javacv.nodes.io.reader.TestIONodeFactory">
+  </node>
 	</extension>
 	<extension point="org.knime.workbench.repository.categories">
 		<category description="JavaCV integration" icon="icons/default.png" level-id="javacv" name="JavaCV Integration" path="/community/knip" />

@@ -6,7 +6,6 @@ import static org.bytedeco.javacpp.opencv_imgproc.cvGetCentralMoment;
 import static org.bytedeco.javacpp.opencv_imgproc.cvGetSpatialMoment;
 import static org.bytedeco.javacpp.opencv_imgproc.cvMoments;
 
-import org.bytedeco.javacpp.opencv_core.CvPoint;
 import org.bytedeco.javacpp.opencv_core.CvScalar;
 import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.bytedeco.javacpp.opencv_imgproc.CvMoments;

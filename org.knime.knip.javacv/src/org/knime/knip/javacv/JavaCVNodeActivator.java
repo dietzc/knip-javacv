@@ -48,8 +48,11 @@
  */
 package org.knime.knip.javacv;
 
+import net.sourceforge.jdatepicker.graphics.JNextIcon;
+
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacpp.opencv_core;
+import org.bytedeco.javacpp.videoInputLib;
 import org.knime.core.node.NodeLogger;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -67,10 +70,6 @@ public class JavaCVNodeActivator implements BundleActivator {
 			.getLogger(JavaCVNodeActivator.class);
 
 	private static boolean JavaCVLoaded = false;
-
-	private static String[] WINDOWS = { "msvcp100", "msvcr100", "jnicvkernels",
-			"jniARToolKitPlus", "opencv_core248", "opencv_imgproc248",
-			"jniopencv_core" };
 
 	//
 	// "jniopencv_legacy", "jniopencv_ml",
