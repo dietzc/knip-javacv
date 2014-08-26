@@ -1,4 +1,8 @@
-package org.knime.knip.javacv.nodes.bypass;
+package org.knime.knip.javacv.nodes.greyConverter;
+
+import static com.googlecode.javacv.cpp.opencv_core.IPL_DEPTH_8U;
+import static com.googlecode.javacv.cpp.opencv_imgproc.CV_BGR2GRAY;
+import static com.googlecode.javacv.cpp.opencv_imgproc.cvCvtColor;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -19,13 +23,13 @@ import org.knime.knip.javacv.nodes.io.webcam.SimpleStreamableNodeModel;
 
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
-public class ByPassNodeModel extends SimpleStreamableFunctionNodeModel
+public class GreyConverterNodeModel extends SimpleStreamableFunctionNodeModel
 		implements SimpleStreamableNodeModel {
 
 	private CellFactory m_cellfactory;
 	private IplImage m_currentImg;
 
-	public ByPassNodeModel() {
+	public GreyConverterNodeModel() {
 
 	}
 
@@ -53,26 +57,32 @@ public class ByPassNodeModel extends SimpleStreamableFunctionNodeModel
 
 			@Override
 			public DataColumnSpec[] getColumnSpecs() {
-				return new DataColumnSpec[] { new DataColumnSpecCreator(
-						"Tracked Moment", IplImageCell.TYPE).createSpec() };
+				return new DataColumnSpec[] { new DataColumnSpecCreator("Gray",
+						IplImageCell.TYPE).createSpec() };
 			}
 
 			@Override
 			public DataCell[] getCells(DataRow row) {
 
-				// try {
-				// Thread.sleep(100);
-				// } catch (InterruptedException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 				IplImage in = ((IplImageValue) row.getCell(0)).getIplImage();
 
-				m_currentImg = in;
+				IplImage grayImage = IplImage.create(in.width(), in.height(),
+						IPL_DEPTH_8U, 1);
+
+				cvCvtColor(in, grayImage, CV_BGR2GRAY);
+
+				m_currentImg = grayImage;
+
 				stateChanged();
 
-				return new DataCell[] { new IplImageCell(in) };
+				return new DataCell[] { new IplImageCell(grayImage) };
 			}
 		};
 

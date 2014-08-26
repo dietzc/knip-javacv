@@ -1,6 +1,6 @@
 package org.knime.knip.javacv.nodes.io.webcam;
 
-import org.bytedeco.javacpp.opencv_core.IplImage;
+import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
 public interface SimpleStreamableNodeModel {
 

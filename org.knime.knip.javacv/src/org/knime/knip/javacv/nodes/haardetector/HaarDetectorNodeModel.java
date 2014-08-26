@@ -1,4 +1,13 @@
-package org.knime.knip.javacv.nodes.bypass;
+package org.knime.knip.javacv.nodes.haardetector;
+
+import static com.googlecode.javacv.cpp.opencv_core.CV_AA;
+import static com.googlecode.javacv.cpp.opencv_core.cvClearMemStorage;
+import static com.googlecode.javacv.cpp.opencv_core.cvGetSeqElem;
+import static com.googlecode.javacv.cpp.opencv_core.cvLoad;
+import static com.googlecode.javacv.cpp.opencv_core.cvPoint;
+import static com.googlecode.javacv.cpp.opencv_core.cvRectangle;
+import static com.googlecode.javacv.cpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
+import static com.googlecode.javacv.cpp.opencv_objdetect.cvHaarDetectObjects;
 
 import org.knime.core.data.DataCell;
 import org.knime.core.data.DataColumnSpec;
@@ -17,22 +26,22 @@ import org.knime.knip.javacv.IplImageCell;
 import org.knime.knip.javacv.IplImageValue;
 import org.knime.knip.javacv.nodes.io.webcam.SimpleStreamableNodeModel;
 
+import com.googlecode.javacv.cpp.opencv_core.CvMemStorage;
+import com.googlecode.javacv.cpp.opencv_core.CvRect;
+import com.googlecode.javacv.cpp.opencv_core.CvScalar;
+import com.googlecode.javacv.cpp.opencv_core.CvSeq;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
+import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
 
-public class ByPassNodeModel extends SimpleStreamableFunctionNodeModel
+public class HaarDetectorNodeModel extends SimpleStreamableFunctionNodeModel
 		implements SimpleStreamableNodeModel {
 
-	private CellFactory m_cellfactory;
 	private IplImage m_currentImg;
 
-	public ByPassNodeModel() {
+	private static CvHaarClassifierCascade m_classifier = new CvHaarClassifierCascade(
+			cvLoad("c:\\haarcascade_frontalface_alt.xml"));
 
-	}
-
-	@Override
-	protected boolean isDistributable() {
-		return false;
-	}
+	private CellFactory m_cellFactory;
 
 	@Override
 	protected ColumnRearranger createColumnRearranger(DataTableSpec spec)
@@ -42,41 +51,59 @@ public class ByPassNodeModel extends SimpleStreamableFunctionNodeModel
 		return columnRearranger;
 	}
 
+	@Override
+	protected boolean isDistributable() {
+		return false;
+	}
+
 	private CellFactory createCellFactory() {
-		m_cellfactory = new CellFactory() {
+		m_cellFactory = new CellFactory() {
+
+			private CvMemStorage m_storage;
 
 			@Override
 			public void setProgress(int curRowNr, int rowCount, RowKey lastKey,
 					ExecutionMonitor exec) {
+				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public DataColumnSpec[] getColumnSpecs() {
 				return new DataColumnSpec[] { new DataColumnSpecCreator(
-						"Tracked Moment", IplImageCell.TYPE).createSpec() };
+						"FaceWithRectangle", IplImageCell.TYPE).createSpec() };
 			}
 
 			@Override
 			public DataCell[] getCells(DataRow row) {
 
-				// try {
-				// Thread.sleep(100);
-				// } catch (InterruptedException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
-
 				IplImage in = ((IplImageValue) row.getCell(0)).getIplImage();
 
+				if (m_storage == null)
+					m_storage = CvMemStorage.create();
+
+				cvClearMemStorage(m_storage);
+
+				CvSeq faces = cvHaarDetectObjects(in, m_classifier, m_storage,
+						1.1, 3, CV_HAAR_DO_CANNY_PRUNING);
+				int total = faces.total();
+				for (int i = 0; i < total; i++) {
+					CvRect r = new CvRect(cvGetSeqElem(faces, i));
+					int x = r.x(), y = r.y(), w = r.width(), h = r.height();
+					cvRectangle(in, cvPoint(x, y), cvPoint(x + w, y + h),
+							CvScalar.WHITE, 1, CV_AA, 0);
+
+				}
 				m_currentImg = in;
 				stateChanged();
 
 				return new DataCell[] { new IplImageCell(in) };
+
 			}
+
 		};
 
-		return m_cellfactory;
+		return m_cellFactory;
 	}
 
 	@Override
@@ -102,10 +129,6 @@ public class ByPassNodeModel extends SimpleStreamableFunctionNodeModel
 	@Override
 	protected void reset() {
 		super.reset();
-	}
-
-	abstract interface MyCellFactory extends CellFactory {
-		void clearFrame();
 	}
 
 	@Override
