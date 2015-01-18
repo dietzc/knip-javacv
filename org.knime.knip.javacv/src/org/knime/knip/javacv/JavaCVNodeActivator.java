@@ -48,11 +48,8 @@
  */
 package org.knime.knip.javacv;
 
-import net.sourceforge.jdatepicker.graphics.JNextIcon;
-
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacpp.opencv_core;
-import org.bytedeco.javacpp.videoInputLib;
 import org.knime.core.node.NodeLogger;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;

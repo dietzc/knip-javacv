@@ -8,16 +8,15 @@ import static org.bytedeco.javacpp.opencv_core.IPL_DEPTH_32S;
 import static org.bytedeco.javacpp.opencv_core.IPL_DEPTH_64F;
 import static org.bytedeco.javacpp.opencv_core.IPL_DEPTH_8S;
 import static org.bytedeco.javacpp.opencv_core.IPL_DEPTH_8U;
-
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.img.basictypeaccess.array.BitArray;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
 import net.imglib2.img.basictypeaccess.array.DoubleArray;
 import net.imglib2.img.basictypeaccess.array.FloatArray;
 import net.imglib2.img.basictypeaccess.array.IntArray;
+import net.imglib2.img.basictypeaccess.array.LongArray;
 import net.imglib2.img.basictypeaccess.array.ShortArray;
 import net.imglib2.img.cell.CellImg;
 import net.imglib2.img.planar.PlanarImg;
@@ -115,8 +114,8 @@ public class Converter {
 		IplImage ii = IplImage.create(width, height, depth, channels);
 
 		if (type instanceof BitType) {
-			ArrayImg<BitType, BitArray> img = (ArrayImg<BitType, BitArray>) input;
-			int[] data = img.update(null).getCurrentStorageArray();
+			ArrayImg<BitType, LongArray> img = (ArrayImg<BitType, LongArray>) input;
+			long[] data = img.update(null).getCurrentStorageArray();
 			System.arraycopy(data, 0, ii.getIntBuffer().array(), 0, size);
 		} else if (type instanceof ByteType || type instanceof UnsignedByteType) {
 			ArrayImg<?, ByteArray> img = (ArrayImg<?, ByteArray>) input;
@@ -181,7 +180,9 @@ public class Converter {
 		Img<T> img = null;
 
 		if (depth == IPL_DEPTH_1U) {
-			ArrayImg<BitType, BitArray> bits = ArrayImgs.bits(width, height,
+			
+			//TODO This doesnt work with INT. Please validate
+			ArrayImg<BitType, LongArray> bits = ArrayImgs.bits(width, height,
 					channels);
 
 			System.arraycopy(input.getIntBuffer().array(), 0,

@@ -1,5 +1,17 @@
 package org.knime.knip.javacv.nodes.contour;
 
+import static org.bytedeco.javacpp.helper.opencv_core.cvDrawContours;
+import static org.bytedeco.javacpp.helper.opencv_imgproc.cvFindContours;
+import static org.bytedeco.javacpp.opencv_core.CV_AA;
+import static org.bytedeco.javacpp.opencv_core.cvClearMemStorage;
+import static org.bytedeco.javacpp.opencv_imgproc.CV_CHAIN_APPROX_SIMPLE;
+import static org.bytedeco.javacpp.opencv_imgproc.CV_POLY_APPROX_DP;
+import static org.bytedeco.javacpp.opencv_imgproc.CV_RETR_LIST;
+import static org.bytedeco.javacpp.opencv_imgproc.CV_THRESH_BINARY;
+import static org.bytedeco.javacpp.opencv_imgproc.cvApproxPoly;
+import static org.bytedeco.javacpp.opencv_imgproc.cvContourPerimeter;
+import static org.bytedeco.javacpp.opencv_imgproc.cvThreshold;
+
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.javacpp.opencv_core.CvContour;
 import org.bytedeco.javacpp.opencv_core.CvMemStorage;
@@ -22,9 +34,6 @@ import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 import org.knime.knip.javacv.IplImageCell;
 import org.knime.knip.javacv.IplImageValue;
 import org.knime.knip.javacv.nodes.io.webcam.SimpleStreamableNodeModel;
-
-import static org.bytedeco.javacpp.opencv_core.*;
-import static org.bytedeco.javacpp.opencv_imgproc.*;
 
 public class ContourDetectorNodeModel extends SimpleStreamableFunctionNodeModel
 		implements SimpleStreamableNodeModel {

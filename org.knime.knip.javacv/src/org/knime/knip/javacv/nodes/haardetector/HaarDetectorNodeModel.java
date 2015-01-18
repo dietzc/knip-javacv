@@ -1,5 +1,14 @@
 package org.knime.knip.javacv.nodes.haardetector;
 
+import static org.bytedeco.javacpp.helper.opencv_objdetect.cvHaarDetectObjects;
+import static org.bytedeco.javacpp.opencv_core.CV_AA;
+import static org.bytedeco.javacpp.opencv_core.cvClearMemStorage;
+import static org.bytedeco.javacpp.opencv_core.cvGetSeqElem;
+import static org.bytedeco.javacpp.opencv_core.cvLoad;
+import static org.bytedeco.javacpp.opencv_core.cvPoint;
+import static org.bytedeco.javacpp.opencv_core.cvRectangle;
+import static org.bytedeco.javacpp.opencv_objdetect.CV_HAAR_DO_CANNY_PRUNING;
+
 import org.bytedeco.javacpp.opencv_core.CvMemStorage;
 import org.bytedeco.javacpp.opencv_core.CvRect;
 import org.bytedeco.javacpp.opencv_core.CvScalar;
@@ -22,9 +31,6 @@ import org.knime.core.node.streamable.simple.SimpleStreamableFunctionNodeModel;
 import org.knime.knip.javacv.IplImageCell;
 import org.knime.knip.javacv.IplImageValue;
 import org.knime.knip.javacv.nodes.io.webcam.SimpleStreamableNodeModel;
-
-import static org.bytedeco.javacpp.opencv_core.*;
-import static org.bytedeco.javacpp.opencv_objdetect.*;
 
 public class HaarDetectorNodeModel extends SimpleStreamableFunctionNodeModel
 		implements SimpleStreamableNodeModel {

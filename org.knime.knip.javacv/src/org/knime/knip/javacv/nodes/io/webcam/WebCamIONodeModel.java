@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.bytedeco.javacpp.opencv_core.IplImage;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.OpenCVFrameGrabber;
-import org.bytedeco.javacv.VideoInputFrameGrabber;
 import org.knime.core.data.DataColumnSpec;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;

@@ -49,21 +49,23 @@
  */
 package org.knime.knip.javacv.nodes.io.reader;
 
+import static org.bytedeco.javacpp.opencv_core.IPL_DEPTH_8U;
+import static org.bytedeco.javacpp.opencv_core.cvCreateImage;
+import static org.bytedeco.javacpp.opencv_core.cvGetSize;
+import static org.bytedeco.javacpp.opencv_imgproc.CV_BGRA2GRAY;
+import static org.bytedeco.javacpp.opencv_imgproc.cvCvtColor;
+
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 
+import net.imagej.ImgPlus;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.basictypeaccess.array.ByteArray;
-import net.imglib2.meta.ImgPlus;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 
-import static org.bytedeco.javacpp.opencv_imgproc.*;
-import static org.bytedeco.javacpp.opencv_core.*;
-
 import org.bytedeco.javacpp.opencv_core.IplImage;
-import org.bytedeco.javacpp.helper.opencv_core.CvArr;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.knime.core.data.DataColumnSpecCreator;
 import org.knime.core.data.DataTableSpec;
